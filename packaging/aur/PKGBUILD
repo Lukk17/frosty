@@ -1,0 +1,107 @@
+# Maintainer: lukk17
+
+pkgname=frosty
+pkgver=0.0.1
+pkgrel=1
+pkgdesc='Frosted glass theme for KDE Plasma 6: Plasma Style, colors, application style, window decoration, icons, cursors, panel layout and Konsole and Dolphin defaults'
+arch=('x86_64')
+url='https://github.com/Lukk17/frosty'
+license=('GPL-3.0-only' 'GPL-3.0-or-later' 'GPL-2.0-or-later' 'LGPL-3.0-or-later' 'LGPL-3.0-only' 'MIT')
+depends=(
+  'bash'
+  'frameworkintegration'
+  'hicolor-icon-theme'
+  'kcmutils'
+  'kcolorscheme'
+  'kconfig'
+  'kconfigwidgets'
+  'kcoreaddons'
+  'kdecoration'
+  'kguiaddons'
+  'ki18n'
+  'kiconthemes'
+  'kirigami'
+  'konsave'
+  'kwidgetsaddons'
+  'kwindowsystem'
+  'libplasma'
+  'plasma-workspace'
+  'plasma6-applets-appgrid'
+  'qt6-base'
+  'qt6-declarative'
+  'qt6-tools'
+)
+makedepends=(
+  'cmake'
+  'extra-cmake-modules'
+)
+options=('!emptydirs')
+install=frosty.install
+backup=(
+  'etc/xdg/dolphinrc'
+  'etc/xdg/konsolerc'
+)
+source=("$pkgname-$pkgver.tar.gz::https://github.com/Lukk17/frosty/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=('0000000000000000000000000000000000000000000000000000000000000000')
+
+_frosty_root() {
+  printf '%s\n' "$srcdir/$pkgname-$pkgver"
+}
+
+_copy_tree() {
+  cp -r -- "$1" "$2"
+  find "$2" -type d -exec chmod 755 {} +
+  find "$2" -type f -exec chmod 644 {} +
+}
+
+build() {
+  local root
+  root=$(_frosty_root)
+
+  cmake -B build -S "$root/vendor/style" \
+    -DCMAKE_BUILD_TYPE=None \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DBUILD_TESTING=OFF \
+    -DBUILD_QT6=ON \
+    -DBUILD_QT5=OFF \
+    -Wno-dev
+  cmake --build build
+}
+
+package() {
+  local root share doc changes component
+  root=$(_frosty_root)
+  share="$pkgdir/usr/share"
+  doc="$share/doc/$pkgname"
+
+  DESTDIR="$pkgdir" cmake --install build
+  rm -rf -- "$pkgdir/usr/lib/cmake"
+
+  install -dm755 "$share/plasma/desktoptheme" "$share/plasma/look-and-feel" "$share/icons"
+
+  _copy_tree "$root/vendor/plasma-style/frosty" "$share/plasma/desktoptheme/frosty"
+  install -Dm644 "$root/vendor/color-scheme/Frosty.colors" "$share/color-schemes/Frosty.colors"
+
+  _copy_tree "$root/look-and-feel/com.github.lukk17.frosty" "$share/plasma/look-and-feel/com.github.lukk17.frosty"
+  install -Dm644 "$root/vendor/color-scheme/Frosty.colors" "$share/plasma/look-and-feel/com.github.lukk17.frosty/contents/colors"
+
+  _copy_tree "$root/vendor/icons/frosty" "$share/icons/frosty"
+  _copy_tree "$root/vendor/cursors/Sweet-cursors" "$share/icons/Sweet-cursors"
+
+  install -Dm644 "$root/konsole/Frosty.profile" "$share/konsole/Frosty.profile"
+  install -Dm644 "$root/vendor/konsole/Frosty Green.colorscheme" "$share/konsole/Frosty Green.colorscheme"
+  install -Dm644 -t "$pkgdir/etc/xdg" "$root/xdg/dolphinrc" "$root/xdg/konsolerc"
+  install -Dm755 "$root/bin/frosty-setup" "$pkgdir/usr/bin/frosty-setup"
+  install -Dm644 "$root/lib/restore-widget-settings.js" "$share/frosty/restore-widget-settings.js"
+
+  install -Dm644 -t "$share/licenses/$pkgname" "$root"/LICENSES/GPL-*.txt "$root"/LICENSES/LGPL-*.txt "$root/CREDITS.md"
+  install -Dm644 "$root/vendor/style/LICENSE.MIT" "$share/licenses/$pkgname/MIT.txt"
+
+  install -Dm644 "$root/CHANGES.md" "$doc/CHANGES.md"
+  install -Dm644 "$root/look-and-feel/CHANGES.md" "$doc/look-and-feel/CHANGES.md"
+  for changes in "$root"/vendor/*/CHANGES.md; do
+    component=${changes%/CHANGES.md}
+    component=${component##*/}
+    install -Dm644 "$changes" "$doc/$component/CHANGES.md"
+  done
+}

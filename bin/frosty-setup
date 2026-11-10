@@ -1,0 +1,370 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+readonly THEME=com.github.lukk17.frosty
+readonly KNS_HANDLER=/usr/lib/kf6/kpackagehandlers/knshandler
+readonly KNS_SOURCE=kns://plasmoids.knsrc/api.kde-look.org
+readonly RESTORE_SCRIPT=/usr/share/frosty/restore-widget-settings.js
+readonly STATE_FILE="${XDG_STATE_HOME:-$HOME/.local/state}/frosty/last-run"
+readonly WIDGETS=(
+  "KdeControlStation|2196105|KDE Control Station"
+  "com.github.N0repi.compactclock|2366454|Compact Clock"
+  "org.kde.plasma.dockio|2185626|Dockio"
+  "com.github.itayavra.batterywatch|2331781|BatteryWatch"
+  "com.github.lukk17.aiusage|2380133|AI usage widget"
+)
+
+usage() {
+  cat <<'EOF'
+Usage: frosty-setup [--yes | --look-only | --undo] [--help]
+
+Sets up the Frosty desktop for the current user, in this order:
+  1. Saves a backup of your desktop with konsave as frosty-backup-<date>-<time>
+     and exports it to ~/frosty-backup-<date>-<time>.knsv. Notes your current
+     global theme and the backup name in ~/.local/state/frosty/last-run, or in
+     $XDG_STATE_HOME/frosty/last-run when XDG_STATE_HOME is set.
+  2. Installs the KDE Store widgets that the Frosty layout uses:
+       KDE Control Station  https://store.kde.org/p/2196105
+       Compact Clock        https://store.kde.org/p/2366454
+       Dockio               https://store.kde.org/p/2185626
+       BatteryWatch         https://store.kde.org/p/2331781
+       AI usage widget      https://store.kde.org/p/2380133
+     A widget that is already installed is left alone.
+  3. Asks whether your panels and desktop widgets should be replaced with the
+     Frosty ones. The answer is No unless you type y.
+  4. Yes: applies the Frosty global theme with its layout, then copies the
+     settings of every widget that you had before and that the Frosty layout
+     has too back from the backup. No: applies only the Frosty look, and your
+     panels and widgets stay.
+  5. Shows the command that brings back your previous desktop:
+     frosty-setup --undo
+
+Run it as your own user, not with sudo, while you are logged in to Plasma. It
+needs a network connection for the KDE Store.
+
+Options:
+  --yes        Replace the panels and desktop widgets without asking.
+  --look-only  Apply only the Frosty look without asking. The panels stay.
+  --undo       Go back to the desktop you had before the last frosty-setup
+               run. It shows the three steps and asks first: apply the
+               previous global theme, bring back the backup with konsave,
+               and restart Plasma.
+  -h, --help   Show this help and exit.
+
+Exit status:
+  0  done, or --undo was answered No
+  1  the backup, noting the run, a widget install, applying the theme, or a
+     step of --undo failed, or --undo found no record of a run
+  2  wrong use: an unknown option, run as root, Plasma not running, or a
+     needed program is missing
+EOF
+  exit "${1:-0}"
+}
+
+say() {
+  printf 'frosty-setup: %s\n' "$*"
+}
+
+error() {
+  printf 'frosty-setup: error: %s\n' "$*" >&2
+}
+
+is_installed() {
+  local plugin="$1"
+  local data_dirs dir
+  IFS=: read -r -a data_dirs <<< "${XDG_DATA_HOME:-$HOME/.local/share}:${XDG_DATA_DIRS:-/usr/local/share:/usr/share}"
+  for dir in "${data_dirs[@]}"; do
+    [[ -n "$dir" && -f "$dir/plasma/plasmoids/$plugin/metadata.json" ]] && return 0
+  done
+  return 1
+}
+
+install_widget() {
+  local plugin="$1" store_id="$2" name="$3"
+  if is_installed "$plugin"; then
+    say "$name is already installed."
+    return 0
+  fi
+  say "Installing $name from the KDE Store."
+  if ! "$KNS_HANDLER" "$KNS_SOURCE/$store_id"; then
+    error "the KDE Store helper could not install $name."
+    return 1
+  fi
+  if ! is_installed "$plugin"; then
+    error "$name is still missing after the KDE Store helper finished."
+    return 1
+  fi
+  say "$name is installed."
+}
+
+plasma_script() {
+  qdbus6 org.kde.plasmashell /PlasmaShell org.kde.PlasmaShell.evaluateScript "$1"
+}
+
+panel_ids() {
+  plasma_script 'print(panelIds.join(","))'
+}
+
+backup_name() {
+  local base="$1" name="$1" number=2
+  while [[ -e "$HOME/.config/konsave/profiles/$name" || -e "$HOME/$name.knsv" ]]; do
+    name="$base-$number"
+    number=$((number + 1))
+  done
+  printf '%s\n' "$name"
+}
+
+save_backup() {
+  local name="$1"
+  local profile="$HOME/.config/konsave/profiles/$name"
+  local archive="$HOME/$name.knsv"
+  say "Saving a backup of your desktop with konsave as $name."
+  konsave -s "$name"
+  if [[ ! -f "$profile/configs/plasma-org.kde.plasma.desktop-appletsrc" ]]; then
+    error "konsave did not save the desktop layout to $profile. Nothing was changed."
+    return 1
+  fi
+  say "Exporting the backup to $archive."
+  konsave -e "$name" -d "$HOME"
+  if [[ "$(head -c 2 "$archive" 2> /dev/null || true)" != PK ]]; then
+    error "konsave did not write $archive. Nothing was changed."
+    return 1
+  fi
+}
+
+layout_replaced() {
+  local old_ids="$1" new_ids="$2" id
+  local olds=()
+  [[ -n "$new_ids" ]] || return 1
+  IFS=, read -r -a olds <<< "$old_ids"
+  for id in "${olds[@]}"; do
+    [[ ",$new_ids," == *",$id,"* ]] && return 1
+  done
+  return 0
+}
+
+wait_for_new_layout() {
+  local old_ids="$1" new_ids second
+  for second in $(seq 1 60); do
+    sleep 1
+    new_ids="$(panel_ids 2> /dev/null || true)"
+    if layout_replaced "$old_ids" "$new_ids"; then
+      sleep 3
+      return 0
+    fi
+  done
+  error "Plasma did not show the Frosty layout after $second seconds."
+  return 1
+}
+
+restore_settings() {
+  local backup_file="$1" path
+  path="${backup_file//\\/\\\\}"
+  path="${path//\"/\\\"}"
+  say "Copying your widget settings back from the backup."
+  plasma_script "var backupFile = \"$path\";
+$(< "$RESTORE_SCRIPT")" | sed 's/^/frosty-setup: /'
+}
+
+apply_layout() {
+  local backup="$1" old_ids
+  old_ids="$(panel_ids)"
+  say "Applying the Frosty global theme with its panels and desktop widgets."
+  plasma-apply-lookandfeel --apply "$THEME" --resetLayout
+  say "Waiting for Plasma to build the Frosty layout."
+  wait_for_new_layout "$old_ids" || return 1
+  if ! restore_settings "$HOME/.config/konsave/profiles/$backup/configs/plasma-org.kde.plasma.desktop-appletsrc"; then
+    error "the widget settings could not be copied back. They are safe in the backup $backup."
+    return 1
+  fi
+  say "Widgets marked \"not in Frosty\" are not on the new panels. The backup brings them back."
+}
+
+apply_look() {
+  say "Applying only the Frosty look. Your panels and widgets stay."
+  plasma-apply-lookandfeel --apply "$THEME"
+}
+
+ask_yes() {
+  local question="$1" answer=""
+  if [[ ! -t 0 ]]; then
+    say "There is no terminal to ask in, so the answer is No."
+    return 1
+  fi
+  read -r -p "$question (y/N) " answer || true
+  [[ "$answer" == [yY] || "$answer" == [yY][eE][sS] ]]
+}
+
+record_run() {
+  local previous="$1" backup="$2" temp
+  mkdir -p -- "${STATE_FILE%/*}" || return 1
+  temp="$(mktemp "$STATE_FILE.XXXXXX")" || return 1
+  if ! printf 'previous_theme=%s\nbackup=%s\n' "$previous" "$backup" > "$temp" || ! mv -f -- "$temp" "$STATE_FILE"; then
+    rm -f -- "$temp"
+    return 1
+  fi
+}
+
+recorded_value() {
+  local wanted="$1" key value
+  while IFS='=' read -r key value || [[ -n "$key" ]]; do
+    if [[ "$key" == "$wanted" && "$value" =~ ^[A-Za-z0-9._-]+$ ]]; then
+      printf '%s\n' "$value"
+      return 0
+    fi
+  done < "$STATE_FILE"
+  return 1
+}
+
+print_go_back_steps() {
+  say "  1. plasma-apply-lookandfeel --apply $1"
+  say "  2. konsave -a $2"
+  say "  3. systemctl --user restart plasma-plasmashell"
+}
+
+print_manual_steps() {
+  say "To go back by hand, run these three commands with your own names:"
+  print_go_back_steps "<previous global theme>" "<backup name>"
+  say "konsave -l lists your backups, and plasma-apply-lookandfeel --list lists the global themes."
+}
+
+step_failed() {
+  local number="$1" problem="$2" output="$3"
+  error "step $number of 3 failed: $problem"
+  [[ -z "$output" ]] || printf '%s\n' "$output" | sed 's/^/frosty-setup:   /' >&2
+  error "fix the problem and run frosty-setup --undo again."
+}
+
+go_back() {
+  local previous="$1" backup="$2" output
+  local saved="$HOME/.config/konsave/profiles/$backup/configs/plasma-org.kde.plasma.desktop-appletsrc"
+  local live="$HOME/.config/plasma-org.kde.plasma.desktop-appletsrc"
+  if ! output="$(plasma-apply-lookandfeel --apply "$previous" 2>&1)"; then
+    step_failed 1 "plasma-apply-lookandfeel could not apply the global theme $previous." "$output"
+    return 1
+  fi
+  say "Step 1 of 3 done: the global theme is $previous again."
+  if ! output="$(konsave -a "$backup" 2>&1)" || [[ ! -f "$live" || "$(< "$saved")" != "$(< "$live")" ]]; then
+    step_failed 2 "konsave did not bring back the files of the backup $backup." "$output"
+    return 1
+  fi
+  say "Step 2 of 3 done: konsave brought back the files of the backup $backup."
+  if ! output="$(systemctl --user restart plasma-plasmashell 2>&1)"; then
+    step_failed 3 "Plasma did not restart." "$output"
+    return 1
+  fi
+  say "Step 3 of 3 done: Plasma restarted with your old panels and widgets."
+}
+
+undo() {
+  local previous backup
+  require_programs konsave plasma-apply-lookandfeel systemctl || return 2
+  if [[ ! -f "$STATE_FILE" ]]; then
+    say "There is no record of a frosty-setup run in $STATE_FILE."
+    print_manual_steps
+    return 1
+  fi
+  if ! previous="$(recorded_value previous_theme)" || ! backup="$(recorded_value backup)"; then
+    say "The record $STATE_FILE has no valid global theme or backup name."
+    print_manual_steps
+    return 1
+  fi
+  if [[ ! -f "$HOME/.config/konsave/profiles/$backup/configs/plasma-org.kde.plasma.desktop-appletsrc" ]]; then
+    error "the backup $backup is missing from $HOME/.config/konsave/profiles."
+    error "if you still have $HOME/$backup.knsv, bring it back with konsave -i $HOME/$backup.knsv and run frosty-setup --undo again."
+    return 1
+  fi
+  say "The last frosty-setup run saved the backup $backup and noted the global theme $previous."
+  say "frosty-setup --undo runs these three steps:"
+  print_go_back_steps "$previous" "$backup"
+  if ! ask_yes "Go back to the desktop you had before the last frosty-setup run?"; then
+    say "Nothing was changed."
+    return 0
+  fi
+  go_back "$previous" "$backup"
+}
+
+require_programs() {
+  local program
+  for program in "$@"; do
+    if ! command -v "$program" > /dev/null; then
+      error "$program is missing. Install the frosty package again with its dependencies."
+      return 2
+    fi
+  done
+}
+
+check_programs() {
+  require_programs konsave qdbus6 kreadconfig6 plasma-apply-lookandfeel "$KNS_HANDLER" || return 2
+  if [[ ! -f "$RESTORE_SCRIPT" ]]; then
+    error "$RESTORE_SCRIPT is missing. Install the frosty package again."
+    return 2
+  fi
+  if ! qdbus6 org.kde.plasmashell /PlasmaShell > /dev/null 2>&1; then
+    error "Plasma is not running. Log in to Plasma and run frosty-setup again."
+    return 2
+  fi
+}
+
+main() {
+  local mode=ask
+  if [[ $# -gt 1 ]]; then
+    error "too many arguments."
+    usage 2 >&2
+  fi
+  case "${1:-}" in
+    "") ;;
+    --yes) mode=yes ;;
+    --look-only) mode=look ;;
+    --undo) mode=undo ;;
+    -h | --help) usage 0 ;;
+    *) error "unknown option: $1"; usage 2 >&2 ;;
+  esac
+  if [[ "$EUID" -eq 0 ]]; then
+    error "run it as your own user, not as root."
+    return 2
+  fi
+  if [[ "$mode" == undo ]]; then
+    local status=0
+    undo || status=$?
+    return "$status"
+  fi
+  check_programs || return 2
+
+  local backup previous entry plugin store_id name failed=0
+  backup="$(backup_name "frosty-backup-$(date +%Y%m%d-%H%M%S)")"
+  previous="$(kreadconfig6 --file kdeglobals --group KDE --key LookAndFeelPackage --default org.kde.breeze.desktop)"
+  say "Your current global theme is $previous."
+  save_backup "$backup" || return 1
+  say "Noting your global theme and the backup name in $STATE_FILE."
+  if ! record_run "$previous" "$backup"; then
+    error "could not write $STATE_FILE. Nothing was changed."
+    return 1
+  fi
+
+  say "Installing the widgets that the Frosty layout uses."
+  for entry in "${WIDGETS[@]}"; do
+    IFS='|' read -r plugin store_id name <<< "$entry"
+    install_widget "$plugin" "$store_id" "$name" || failed=1
+  done
+
+  if [[ "$mode" == ask ]]; then
+    if ask_yes "Replace your panels and desktop widgets with the Frosty ones? Your backup is saved."; then
+      mode=yes
+    else
+      mode=look
+    fi
+  fi
+  if [[ "$mode" == yes ]]; then
+    apply_layout "$backup" || failed=1
+  else
+    apply_look || failed=1
+  fi
+
+  say "To go back to the desktop you had before, run: frosty-setup --undo"
+  say "Your backup $backup is also in the file $HOME/$backup.knsv."
+  return "$failed"
+}
+
+main "$@"

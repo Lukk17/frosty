@@ -1,0 +1,9 @@
+[Desktop Entry]
+DefaultProfile=Frosty.profile
+
+[KonsoleWindow]
+ForceNewTabs=true
+
+[TabBar]
+CloseTabOnMiddleMouseButton=true
+ExpandTabWidth=true

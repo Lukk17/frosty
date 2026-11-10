@@ -1,0 +1,14 @@
+[ContrastEffect]
+enabled=false
+contrast=1
+intensity=1
+saturation=1
+
+[Wallpaper]
+defaultWallpaperTheme=Layan
+defaultFileSuffix=.png
+defaultWidth=2560
+defaultHeight=1440
+
+[AdaptiveTransparency]
+enabled=true

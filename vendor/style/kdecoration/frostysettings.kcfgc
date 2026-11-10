@@ -1,0 +1,6 @@
+File=frostysettingsdata.kcfg
+ClassName=InternalSettings
+NameSpace=Frosty
+Singleton=false
+Mutators=true
+GlobalEnums=true

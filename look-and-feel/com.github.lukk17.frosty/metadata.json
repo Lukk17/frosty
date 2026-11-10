@@ -1,0 +1,16 @@
+{
+    "KPackageStructure": "Plasma/LookAndFeel",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Name": "lukk17"
+            }
+        ],
+        "Category": "",
+        "Description": "Frosted glass Plasma Style, colors, application style, window decoration, icons, cursors and panel layout",
+        "Id": "com.github.lukk17.frosty",
+        "License": "GPL-3.0-only",
+        "Name": "Frosty",
+        "Version": "0.0.1"
+    }
+}

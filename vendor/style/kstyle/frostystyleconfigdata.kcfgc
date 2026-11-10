@@ -1,0 +1,6 @@
+File=frosty.kcfg
+ClassName=StyleConfigData
+NameSpace=Frosty
+Singleton=true
+Mutators=true
+GlobalEnums=true

@@ -1,0 +1,194 @@
+name: Release
+
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Check the version and the tag
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Refuse any branch but main
+        if: github.ref != 'refs/heads/main'
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          echo "::error::Run the release on main, not on ${REF_NAME}."
+          exit 1
+
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Check that every place states the same version
+        id: version
+        run: |
+          version=$(packaging/version.sh)
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "Version: ${version}"
+
+      - name: Fail when the tag already exists
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.version.outputs.version }}
+        run: |
+          tags=$(gh api "repos/${GITHUB_REPOSITORY}/git/matching-refs/tags/v${VERSION}" --jq '.[].ref')
+          if grep -qx "refs/tags/v${VERSION}" <<< "${tags}"; then
+            echo "::error::The tag v${VERSION} already exists. Raise the version in every place first."
+            exit 1
+          fi
+
+  build:
+    name: Build, test and package in Arch Linux
+    needs: prepare
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    container:
+      image: archlinux:base-devel-20261108.0.623074@sha256:fa2d4ce3310ddd90a4208e5168be8ad367da5129af1245f38fd2d803bcbe3239
+    steps:
+      - name: Install git for the checkout
+        run: pacman -Sy --noconfirm --needed archlinux-keyring git
+
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install the build tools and dependencies
+        run: packaging/ci.sh deps
+
+      - name: Build and run the style tests
+        run: packaging/ci.sh test /tmp/frosty-tests
+
+      - name: Check licenses with reuse lint
+        run: packaging/ci.sh reuse
+
+      - name: Build the package and run namcap
+        run: packaging/ci.sh package dist/package
+
+      - name: Build the AUR recipe from a git archive and run namcap
+        run: packaging/ci.sh aur-check /tmp/frosty-aur-check
+
+      - name: Build the KDE Store archives
+        run: packaging/store.sh archives dist/store
+
+      - name: Keep the package and the archives
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-files
+          path: |
+            dist/package/*.pkg.tar.zst
+            dist/store/*.tar.gz
+          if-no-files-found: error
+
+  release:
+    name: Create the tag and the GitHub release
+    needs: [prepare, build]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Get the package and the archives
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-files
+          path: dist
+
+      - name: Write the release notes from CHANGES.md
+        env:
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          {
+            echo "Frosty ${VERSION}, a frosted glass theme for KDE Plasma 6."
+            echo
+            echo "Install it from the AUR with \`paru -S frosty\`, then run \`frosty-setup\`. The package file below is the same build for a direct \`sudo pacman -U\`, and the other files are the KDE Store archives."
+            echo
+            echo "### Changes"
+            echo
+            packaging/changelog.sh CHANGES.md "${VERSION}"
+          } > release-notes.md
+
+      - name: Create the tag and the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ needs.prepare.outputs.version }}
+        run: |
+          gh release create "v${VERSION}" \
+            --target "${GITHUB_SHA}" \
+            --title "Frosty ${VERSION}" \
+            --notes-file release-notes.md \
+            dist/package/*.pkg.tar.zst \
+            dist/store/*.tar.gz
+
+  aur:
+    name: Update the AUR package
+    needs: [prepare, release]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    env:
+      AUR_KEY_SET: ${{ secrets.AUR_SSH_PRIVATE_KEY != '' }}
+    steps:
+      - name: Skip when the AUR key is not set
+        if: env.AUR_KEY_SET != 'true'
+        run: |
+          message="The secret AUR_SSH_PRIVATE_KEY is not set, so the AUR package frosty was not updated. Add the secrets AUR_USERNAME, AUR_EMAIL and AUR_SSH_PRIVATE_KEY in the repository settings, then publish the AUR package by hand or in the next release."
+          echo "::warning title=AUR skipped::${message}"
+          echo "${message}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Check out
+        if: env.AUR_KEY_SET == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Push packaging/aur to the AUR with the checksum of the tag archive
+        if: env.AUR_KEY_SET == 'true'
+        uses: KSXGitHub/github-actions-deploy-aur@084b0d9b15415bf9cdb65d44dad1efe37a354050 # v4.2.0
+        with:
+          pkgname: frosty
+          asset_dir: packaging/aur
+          updpkgsums: true
+          commit_username: ${{ secrets.AUR_USERNAME }}
+          commit_email: ${{ secrets.AUR_EMAIL }}
+          ssh_private_key: ${{ secrets.AUR_SSH_PRIVATE_KEY }}
+          commit_message: Update to ${{ needs.prepare.outputs.version }}
+
+  store-checklist:
+    name: Write the KDE Store checklist
+    needs: [prepare, release, aur]
+    if: ${{ !cancelled() && needs.release.result == 'success' }}
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - name: Check out
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Get the package and the archives
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: release-files
+          path: dist
+
+      - name: Write the checklist into the job summary
+        run: packaging/store.sh checklist dist/store >> "$GITHUB_STEP_SUMMARY"

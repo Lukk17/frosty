@@ -1,0 +1,12 @@
+/src/
+/pkg/
+/build/
+/dist/
+*.pkg.tar.zst
+*.pkg.tar.zst.sig
+/packaging/aur/src/
+/packaging/aur/pkg/
+/packaging/aur/frosty-*.tar.gz
+/vendor/style/.clang-format
+/vendor/cursors/source/build/
+/vendor/cursors/source/Sweet-cursors/

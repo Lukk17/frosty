@@ -1,0 +1,40 @@
+frosty_message() {
+  printf '%s\n' \
+    '' \
+    '' \
+    '' \
+    '==============================================================' \
+    '  FROSTY IS INSTALLED. ONE STEP IS LEFT.' \
+    '==============================================================' \
+    '' \
+    '  Open a terminal and type:' \
+    '' \
+    '      frosty-setup' \
+    '' \
+    '  This is a command that came with Frosty. Type it as yourself,' \
+    '  without sudo. It will:' \
+    '' \
+    '    1. Save a backup of your current desktop with konsave,' \
+    '       and also export it to a file.' \
+    '    2. Download the widgets Frosty uses' \
+    '       (clock, control center, dock, battery, AI usage).' \
+    '    3. Ask if your panels and desktop widgets should be' \
+    '       replaced with the Frosty ones. Nothing is replaced' \
+    '       without your yes.' \
+    '    4. Switch your desktop to Frosty.' \
+    '' \
+    '  At the end it shows the command to go back.' \
+    '' \
+    '==============================================================' \
+    '' \
+    '' \
+    ''
+}
+
+post_install() {
+  frosty_message
+}
+
+post_upgrade() {
+  frosty_message
+}

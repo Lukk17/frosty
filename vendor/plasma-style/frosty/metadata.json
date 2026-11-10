@@ -1,0 +1,24 @@
+{
+    "KPackageStructure": "Plasma/Theme",
+    "KPlugin": {
+        "Authors": [
+            {
+                "Email": "vinceliuice@hotmail.com",
+                "Name": "Vinceliuice"
+            },
+            {
+                "Name": "lukk17"
+            }
+        ],
+        "Category": "",
+        "Dependencies": [
+        ],
+        "Description": "Frosted glass Plasma Style, based on the Layan Plasma Style by Vinceliuice",
+        "EnabledByDefault": true,
+        "Id": "frosty",
+        "License": "GPL-3.0-only",
+        "Name": "Frosty",
+        "Version": "0.0.1",
+        "Website": "https://github.com/Lukk17/frosty"
+    }
+}

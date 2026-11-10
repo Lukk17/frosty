@@ -1,0 +1,6 @@
+[Misc]
+Name=Frosty
+ConfigPage=kstyle_config/frostystyleconfig
+Comment=Widget style for Qt Applications
+[KDE]
+WidgetStyle=Frosty
