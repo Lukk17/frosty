@@ -1,16 +1,16 @@
 <svg width="200" height="200" version="1.0" xmlns="http://www.w3.org/2000/svg">
  <defs>
   <radialGradient id="radialGradient4671" cx="1255.9" cy="382.73" r="96.606" gradientTransform="matrix(1.0765,0,0,1.0765,-1252,-310.02)" gradientUnits="userSpaceOnUse">
-   <stop stop-color="#232629" offset="0"/>
-   <stop stop-color="#232629" stop-opacity=".52349" offset=".9"/>
-   <stop stop-color="#232629" stop-opacity=".10738" offset=".96"/>
-   <stop stop-color="#232629" stop-opacity="0" offset="1"/>
+   <stop stop-color="#262626" offset="0"/>
+   <stop stop-color="#262626" stop-opacity=".52349" offset=".9"/>
+   <stop stop-color="#262626" stop-opacity=".10738" offset=".96"/>
+   <stop stop-color="#262626" stop-opacity="0" offset="1"/>
   </radialGradient>
  </defs>
  <g id="ClockFace">
   <path d="m99.572-2a104 104 0 0 0-103.57 104 104 104 0 0 0 104 104 104 104 0 0 0 104-104 104 104 0 0 0-104-104 104 104 0 0 0-0.42773 0zm0.42773 4a98 98 0 0 1 98 98 98 98 0 0 1-98 98 98 98 0 0 1-98-98 98 98 0 0 1 98-98z" fill="url(#radialGradient4671)"/>
   <circle cx="100" cy="101" r="98" fill="#000000" opacity=".15"/>
-  <circle cx="100" cy="100" r="98" fill="#31313f" opacity=".95"/>
+  <circle cx="100" cy="100" r="98" fill="#323232" opacity=".95"/>
   <g opacity=".75" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.3068">
    <circle cx="100" cy="14" r="4" fill="#5657f5" opacity="1" style="paint-order:fill markers stroke"/>
    <circle cx="100" cy="186" r="4" fill="#5657f5" opacity="1" style="paint-order:fill markers stroke"/>

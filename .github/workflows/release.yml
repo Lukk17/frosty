@@ -118,7 +118,7 @@ jobs:
           {
             echo "Frosty ${VERSION}, a frosted glass theme for KDE Plasma 6."
             echo
-            echo "Install it from the AUR with \`paru -S frosty\`, then run \`frosty-setup\`. The package file below is the same build for a direct \`sudo pacman -U\`, and the other files are the KDE Store archives."
+            echo "Install it from the AUR with \`paru -S frosty\`, then pick Frosty in System Settings, Colors & Themes, Global Theme. \`frosty-setup\` is optional, for a konsave backup first and to keep the settings of the widgets you had. The package file below is the same build for a direct \`sudo pacman -U\`, and the other files are the KDE Store archives."
             echo
             echo "### Changes"
             echo

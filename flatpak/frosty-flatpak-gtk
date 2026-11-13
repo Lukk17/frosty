@@ -1,0 +1,199 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+
+readonly FOLDERS=(xdg-config/gtk-3.0 xdg-config/gtk-4.0)
+readonly OVERRIDE_FILE="${FLATPAK_SYSTEM_DIR:-/var/lib/flatpak}/overrides/global"
+readonly GROUP_LINE='^[[:space:]]*\[(.*)\][[:space:]]*$'
+readonly FILESYSTEMS_LINE='^[[:space:]]*filesystems[[:space:]]*=[[:space:]]*(.*)$'
+
+usage() {
+  cat <<'EOF'
+Usage: frosty-flatpak-gtk add | remove | --help
+
+Lets the Flatpak applications installed for the whole system read the live
+KDE colors in ~/.config/gtk-3.0 and ~/.config/gtk-4.0, which the GTK theme
+Frosty-Dark uses. The frosty package runs it as root: add after the package
+is installed or updated and after pacman installs flatpak, remove before the
+package is removed.
+
+Commands:
+  add         Adds xdg-config/gtk-3.0:ro and xdg-config/gtk-4.0:ro to the
+              global Flatpak override with flatpak override --system, which
+              keeps every other setting of that override. A folder that the
+              override already names in any form, for example read and
+              write or denied, stays as it is. Without flatpak it only
+              prints one line.
+  remove      Takes exactly xdg-config/gtk-3.0:ro and xdg-config/gtk-4.0:ro
+              out of the filesystems key of the global override file and
+              keeps every other entry. Deletes the file when nothing else is
+              left in it.
+  -h, --help  Show this help and exit.
+
+Environment:
+  FLATPAK_SYSTEM_DIR  The system Flatpak folder, /var/lib/flatpak when it is
+                      not set, the same as for flatpak itself.
+
+Exit status:
+  0  done, or nothing to do
+  1  flatpak override failed, or the override file could not be written
+  2  wrong use: a missing or unknown command
+EOF
+  exit "${1:-0}"
+}
+
+say() {
+  printf 'frosty-flatpak-gtk: %s\n' "$*"
+}
+
+error() {
+  printf 'frosty-flatpak-gtk: error: %s\n' "$*" >&2
+}
+
+is_frosty_entry() {
+  local entry=$1 folder
+  for folder in "${FOLDERS[@]}"; do
+    [[ "$entry" == "$folder:ro" ]] && return 0
+  done
+  return 1
+}
+
+lists_entry() {
+  local wanted=$1 entry
+  shift
+  for entry in "$@"; do
+    [[ "$entry" == "$wanted" ]] && return 0
+  done
+  return 1
+}
+
+names_folder() {
+  local folder=$1 entry
+  shift
+  for entry in "$@"; do
+    entry=${entry#!}
+    [[ "$entry" == "$folder" || "$entry" == "$folder:"* ]] && return 0
+  done
+  return 1
+}
+
+filesystem_entries() {
+  local file=$1 line group='' entry
+  local entries=()
+  [[ -f "$file" ]] || return 0
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ $GROUP_LINE ]]; then
+      group=${BASH_REMATCH[1]}
+    elif [[ "$group" == Context && "$line" =~ $FILESYSTEMS_LINE ]]; then
+      IFS=';' read -r -a entries <<< "${BASH_REMATCH[1]}"
+      for entry in "${entries[@]}"; do
+        [[ -z "$entry" ]] || printf '%s\n' "$entry"
+      done
+    fi
+  done < "$file"
+}
+
+without_frosty_entries() {
+  local file=$1 line group='' entry dropped
+  local entries=() kept=()
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    if [[ "$line" =~ $GROUP_LINE ]]; then
+      group=${BASH_REMATCH[1]}
+    elif [[ "$group" == Context && "$line" =~ $FILESYSTEMS_LINE ]]; then
+      IFS=';' read -r -a entries <<< "${BASH_REMATCH[1]}"
+      kept=()
+      dropped=0
+      for entry in "${entries[@]}"; do
+        if is_frosty_entry "$entry"; then
+          dropped=1
+        elif [[ -n "$entry" ]]; then
+          kept+=("$entry")
+        fi
+      done
+      if (( dropped == 1 )); then
+        (( ${#kept[@]} == 0 )) || printf 'filesystems=%s;\n' "$(IFS=';'; printf '%s' "${kept[*]}")"
+        continue
+      fi
+    fi
+    printf '%s\n' "$line"
+  done < "$file"
+}
+
+has_settings() {
+  grep -qvE '^[[:space:]]*(#.*|\[.*\][[:space:]]*)?$' -- "$1"
+}
+
+add() {
+  local folder
+  local entries=() wanted=()
+  if ! command -v flatpak > /dev/null; then
+    say 'flatpak is not installed, so there is no Flatpak override to add.'
+    return 0
+  fi
+  mapfile -t entries < <(filesystem_entries "$OVERRIDE_FILE")
+  for folder in "${FOLDERS[@]}"; do
+    if lists_entry "$folder:ro" "${entries[@]}"; then
+      continue
+    elif names_folder "$folder" "${entries[@]}"; then
+      say "the global Flatpak override already names $folder, so it stays as it is."
+    else
+      wanted+=("--filesystem=$folder:ro")
+    fi
+  done
+  (( ${#wanted[@]} > 0 )) || return 0
+  if ! flatpak override --system "${wanted[@]}"; then
+    error "flatpak override --system $(IFS=' '; printf '%s' "${wanted[*]}") failed."
+    return 1
+  fi
+  say 'Flatpak applications installed for the whole system can now read the KDE colors in ~/.config/gtk-3.0 and ~/.config/gtk-4.0.'
+}
+
+has_frosty_entry() {
+  local entry
+  for entry in "$@"; do
+    is_frosty_entry "$entry" && return 0
+  done
+  return 1
+}
+
+remove() {
+  local file=$OVERRIDE_FILE temp
+  local entries=()
+  [[ -f "$file" ]] || return 0
+  mapfile -t entries < <(filesystem_entries "$file")
+  has_frosty_entry "${entries[@]}" || return 0
+  if ! temp=$(mktemp "$file.XXXXXX"); then
+    error "could not write next to $file."
+    return 1
+  fi
+  if ! without_frosty_entries "$file" > "$temp"; then
+    rm -f -- "$temp"
+    error "could not read $file."
+    return 1
+  fi
+  if ! has_settings "$temp"; then
+    rm -f -- "$temp" "$file"
+    say "removed $file, which had no other settings than the two Frosty entries."
+    return 0
+  fi
+  if ! chmod --reference="$file" -- "$temp" || ! mv -f -- "$temp" "$file"; then
+    rm -f -- "$temp"
+    error "could not write $file."
+    return 1
+  fi
+  say "took the Frosty entries xdg-config/gtk-3.0:ro and xdg-config/gtk-4.0:ro out of $file and kept the rest."
+}
+
+main() {
+  (( $# == 1 )) || { error 'one command is needed'; usage 2 >&2; }
+  case "$1" in
+    add) add ;;
+    remove) remove ;;
+    -h | --help) usage 0 ;;
+    *) error "unknown command: $1"; usage 2 >&2 ;;
+  esac
+}
+
+if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+  main "$@"
+fi

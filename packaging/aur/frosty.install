@@ -4,26 +4,31 @@ frosty_message() {
     '' \
     '' \
     '==============================================================' \
-    '  FROSTY IS INSTALLED. ONE STEP IS LEFT.' \
+    '  FROSTY IS INSTALLED.' \
     '==============================================================' \
     '' \
-    '  Open a terminal and type:' \
+    '  The theme and the widgets of its layout (KDE Control Station,' \
+    '  Compact Clock, Dockio, BatteryWatch, AI usage) are installed.' \
+    '' \
+    '  To use Frosty, open System Settings, go to Colors & Themes,' \
+    '  then Global Theme, and click Frosty. In the window that asks' \
+    '  "Apply Frosty?", "Choose what to apply" has the option' \
+    '  "Desktop and window layout". It adds the Frosty panels and' \
+    '  desktop widgets and deletes your own panels and widgets.' \
+    '' \
+    '  GTK applications follow Frosty with the GTK theme' \
+    '  Frosty-Dark from your next login, unless you picked a GTK' \
+    '  theme other than Breeze yourself. frosty-setup sets it at' \
+    '  once.' \
+    '' \
+    '  Optional: in a terminal, as yourself and without sudo, type:' \
     '' \
     '      frosty-setup' \
     '' \
-    '  This is a command that came with Frosty. Type it as yourself,' \
-    '  without sudo. It will:' \
-    '' \
-    '    1. Save a backup of your current desktop with konsave,' \
-    '       and also export it to a file.' \
-    '    2. Download the widgets Frosty uses' \
-    '       (clock, control center, dock, battery, AI usage).' \
-    '    3. Ask if your panels and desktop widgets should be' \
-    '       replaced with the Frosty ones. Nothing is replaced' \
-    '       without your yes.' \
-    '    4. Switch your desktop to Frosty.' \
-    '' \
-    '  At the end it shows the command to go back.' \
+    '  It saves a konsave backup of your desktop first, asks before' \
+    '  it replaces your panels, keeps the settings of the widgets' \
+    '  you already had, sets the GTK theme Frosty-Dark, and' \
+    '  frosty-setup --undo goes back.' \
     '' \
     '==============================================================' \
     '' \
@@ -31,10 +36,20 @@ frosty_message() {
     ''
 }
 
+frosty_flatpak_gtk() {
+  /usr/lib/frosty/frosty-flatpak-gtk "$1"
+}
+
 post_install() {
+  frosty_flatpak_gtk add
   frosty_message
 }
 
 post_upgrade() {
+  frosty_flatpak_gtk add
   frosty_message
+}
+
+pre_remove() {
+  frosty_flatpak_gtk remove
 }

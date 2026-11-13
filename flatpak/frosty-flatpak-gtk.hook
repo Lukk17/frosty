@@ -1,0 +1,9 @@
+[Trigger]
+Operation = Install
+Type = Package
+Target = flatpak
+
+[Action]
+Description = Letting Flatpak applications read the KDE colors for the Frosty GTK theme...
+When = PostTransaction
+Exec = /usr/lib/frosty/frosty-flatpak-gtk add

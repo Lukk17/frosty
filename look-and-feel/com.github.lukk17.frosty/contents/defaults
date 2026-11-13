@@ -1,5 +1,6 @@
 [kdeglobals][KDE]
 widgetStyle=Frosty
+gtkTheme=Frosty-Dark
 
 [kdeglobals][General]
 ColorScheme=Frosty

@@ -3,55 +3,135 @@
 pkgname=frosty
 pkgver=0.0.1
 pkgrel=1
-pkgdesc='Frosted glass theme for KDE Plasma 6: Plasma Style, colors, application style, window decoration, icons, cursors, panel layout and Konsole and Dolphin defaults'
+pkgdesc='Frosted glass theme for KDE Plasma 6: Plasma Style, colors, application style, window decoration, GTK theme, icons, cursors, panel layout with its widgets and Konsole and Dolphin defaults'
 arch=('x86_64')
 url='https://github.com/Lukk17/frosty'
-license=('GPL-3.0-only' 'GPL-3.0-or-later' 'GPL-2.0-or-later' 'LGPL-3.0-or-later' 'LGPL-3.0-only' 'MIT')
+license=('GPL-3.0-only' 'GPL-3.0-or-later' 'GPL-2.0-or-later' 'LGPL-3.0-or-later' 'LGPL-3.0-only' 'LGPL-2.0-or-later' 'LGPL-2.1-or-later' 'MIT')
 depends=(
   'bash'
+  'bluedevil'
+  'bluez-qt'
+  'curl'
   'frameworkintegration'
+  'glib2'
   'hicolor-icon-theme'
   'kcmutils'
   'kcolorscheme'
   'kconfig'
   'kconfigwidgets'
   'kcoreaddons'
+  'kde-gtk-config'
+  'kdeclarative'
+  'kdeconnect'
   'kdecoration'
   'kguiaddons'
   'ki18n'
   'kiconthemes'
   'kirigami'
+  'kirigami-addons'
+  'kitemmodels'
+  'knotifications'
   'konsave'
+  'kquickcharts'
+  'ksvg'
+  'kwallet'
   'kwidgetsaddons'
   'kwindowsystem'
   'libplasma'
+  'libsecret'
+  'networkmanager-qt'
+  'plasma-nm'
+  'plasma-pa'
   'plasma-workspace'
+  'plasma5support'
   'plasma6-applets-appgrid'
+  'powerdevil'
+  'prison'
+  'qt6-5compat'
   'qt6-base'
   'qt6-declarative'
   'qt6-tools'
+  'upower'
 )
 makedepends=(
   'cmake'
   'extra-cmake-modules'
+  'python'
+  'python-cairo'
+  'sassc'
 )
+optdepends=(
+  'bluez-utils: BatteryWatch reads Bluetooth devices that UPower does not list'
+  'docker: the containers that Dockio lists and controls'
+  'flatpak: Flatpak GTK 3 applications use the Frosty-Dark extension and the KDE colors'
+  'headsetcontrol: BatteryWatch reads wireless headsets'
+  'python: BatteryWatch reads HID and Solaar devices'
+  'solaar: BatteryWatch reads Logitech devices'
+  'spectacle: the screenshot button of KDE Control Station'
+  'xdg-utils: the links in KDE Control Station'
+)
+provides=('plasma6-applets-kde-control-station')
+conflicts=('plasma6-applets-kde-control-station')
 options=('!emptydirs')
 install=frosty.install
 backup=(
   'etc/xdg/dolphinrc'
   'etc/xdg/konsolerc'
 )
-source=("$pkgname-$pkgver.tar.gz::https://github.com/Lukk17/frosty/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('0000000000000000000000000000000000000000000000000000000000000000')
+_kcs_commit=15760413b19f24b5e242baadba09d59fa4168088
+_clock_commit=457200d59e4e6d1b5376bf74a13c4b2b17a4d17b
+_dockio_commit=e3388fc24c05329d95dfbffd8988c00cceb39041
+_battery_commit=4dc3d4c1786c8bbcf28b32396fa412aabfc5b1b6
+_aiusage_commit=89d751cd46d6d81ee471b1afcc204a617036116e
+_breeze_gtk_ver=6.8.2
+_spdx_tag=v3.29.0
+source=(
+  "$pkgname-$pkgver.tar.gz::https://github.com/Lukk17/frosty/archive/refs/tags/v$pkgver.tar.gz"
+  "kde-control-station-$_kcs_commit.tar.gz::https://github.com/Lukk17/kde-control-station/archive/$_kcs_commit.tar.gz"
+  "kde-compact-clock-$_clock_commit.tar.gz::https://github.com/N0repi/kde-compact-clock/archive/$_clock_commit.tar.gz"
+  "plasmoid-dockio-$_dockio_commit.tar.gz::https://github.com/brilliantnz/plasmoid-dockio/archive/$_dockio_commit.tar.gz"
+  "batterywatch-$_battery_commit.tar.gz::https://github.com/itayavra/batterywatch/archive/$_battery_commit.tar.gz"
+  "ai-usage-widget-$_aiusage_commit.tar.gz::https://github.com/Lukk17/ai-usage-widget/archive/$_aiusage_commit.tar.gz"
+  "LGPL-2.0-or-later.txt::https://raw.githubusercontent.com/spdx/license-list-data/$_spdx_tag/text/LGPL-2.0-or-later.txt"
+  "https://download.kde.org/stable/plasma/$_breeze_gtk_ver/breeze-gtk-$_breeze_gtk_ver.tar.xz"
+  "LGPL-2.1-or-later.txt::https://raw.githubusercontent.com/spdx/license-list-data/$_spdx_tag/text/LGPL-2.1-or-later.txt"
+)
+sha256sums=('0000000000000000000000000000000000000000000000000000000000000000'
+            '8a51a7409f60a91fce6363ba256baa5fe65ff54c1d3e3a59981f75ae3e6cf677'
+            'b5075ef6f90223e0f9a624727503472c119f2d35cfab850062a299298152e3b6'
+            '7a1e1397ceb637787d6f269ebf0e9e9177294b4a23aeab9464ba19dfe7f3622d'
+            '3d55f49070a0640c2cb5d100361f1e99d016f50e015ede656ee06060b7606884'
+            'a3c98959b89fd06f5736434bac5df2b278c89d0d17aeef0b6164e39dc460fed2'
+            '86dc99d7e5060915ab1dfc1378b7dd351c62088bfa74067e8aa1868c6fdba7d8'
+            '662337b96be3fb67f5ecf903bbd685b894b6b899464822e09311f652a98bc4dd'
+            '5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2')
+_widgets=(
+  "KdeControlStation|kde-control-station-$_kcs_commit|package"
+  "com.github.N0repi.compactclock|kde-compact-clock-$_clock_commit|."
+  "org.kde.plasma.dockio|plasmoid-dockio-$_dockio_commit|package"
+  "com.github.itayavra.batterywatch|batterywatch-$_battery_commit|."
+  "com.github.lukk17.aiusage|ai-usage-widget-$_aiusage_commit|package"
+)
 
 _frosty_root() {
   printf '%s\n' "$srcdir/$pkgname-$pkgver"
 }
 
+_gtk_theme() {
+  local root
+  root=$(_frosty_root)
+  "$root/packaging/gtk-theme.sh" "$1" "$root/vendor/color-scheme/Frosty.colors" "${@:2}"
+}
+
 _copy_tree() {
   cp -r -- "$1" "$2"
-  find "$2" -type d -exec chmod 755 {} +
-  find "$2" -type f -exec chmod 644 {} +
+  chmod -R u=rwX,go=rX "$2"
+}
+
+prepare() {
+  local battery="$srcdir/batterywatch-$_battery_commit/contents"
+  rm -rf -- "$battery/screenshots" "$battery/bin/tests"
+  find "$battery" -name '*.test.*' -delete
 }
 
 build() {
@@ -66,10 +146,16 @@ build() {
     -DBUILD_QT5=OFF \
     -Wno-dev
   cmake --build build
+
+  _gtk_theme build "$srcdir/breeze-gtk-$_breeze_gtk_ver" "$srcdir/gtk-theme"
+}
+
+check() {
+  _gtk_theme check "$srcdir/gtk-theme"
 }
 
 package() {
-  local root share doc changes component
+  local root share doc changes component widget id from dir
   root=$(_frosty_root)
   share="$pkgdir/usr/share"
   doc="$share/doc/$pkgname"
@@ -77,7 +163,7 @@ package() {
   DESTDIR="$pkgdir" cmake --install build
   rm -rf -- "$pkgdir/usr/lib/cmake"
 
-  install -dm755 "$share/plasma/desktoptheme" "$share/plasma/look-and-feel" "$share/icons"
+  install -dm755 "$share/plasma/desktoptheme" "$share/plasma/look-and-feel" "$share/icons" "$share/themes" "$pkgdir/var/lib/flatpak/extension/org.gtk.Gtk3theme.Frosty-Dark/$CARCH"
 
   _copy_tree "$root/vendor/plasma-style/frosty" "$share/plasma/desktoptheme/frosty"
   install -Dm644 "$root/vendor/color-scheme/Frosty.colors" "$share/color-schemes/Frosty.colors"
@@ -94,7 +180,22 @@ package() {
   install -Dm755 "$root/bin/frosty-setup" "$pkgdir/usr/bin/frosty-setup"
   install -Dm644 "$root/lib/restore-widget-settings.js" "$share/frosty/restore-widget-settings.js"
 
-  install -Dm644 -t "$share/licenses/$pkgname" "$root"/LICENSES/GPL-*.txt "$root"/LICENSES/LGPL-*.txt "$root/CREDITS.md"
+  _copy_tree "$srcdir/gtk-theme/Frosty-Dark" "$share/themes/Frosty-Dark"
+  _copy_tree "$srcdir/gtk-theme/flatpak" "$pkgdir/var/lib/flatpak/extension/org.gtk.Gtk3theme.Frosty-Dark/$CARCH/3.22"
+  install -Dm755 "$root/flatpak/frosty-flatpak-gtk" "$pkgdir/usr/lib/frosty/frosty-flatpak-gtk"
+  install -Dm644 "$root/flatpak/frosty-flatpak-gtk.hook" "$share/libalpm/hooks/frosty-flatpak-gtk.hook"
+  install -Dm644 "$root/kconf_update/frosty.upd" "$share/kconf_update/frosty.upd"
+  install -Dm755 "$root/kconf_update/frosty-gtk-theme.sh" "$share/kconf_update/frosty-gtk-theme.sh"
+
+  for widget in "${_widgets[@]}"; do
+    IFS='|' read -r id from dir <<< "$widget"
+    install -Dm644 "$srcdir/$from/$dir/metadata.json" "$share/plasma/plasmoids/$id/metadata.json"
+    _copy_tree "$srcdir/$from/$dir/contents" "$share/plasma/plasmoids/$id/contents"
+    install -Dm644 "$srcdir/$from/LICENSE" "$share/licenses/$pkgname/widgets/$id/LICENSE"
+  done
+  install -Dm644 "$srcdir/kde-compact-clock-$_clock_commit/CREDITS.md" "$share/licenses/$pkgname/widgets/com.github.N0repi.compactclock/CREDITS.md"
+
+  install -Dm644 -t "$share/licenses/$pkgname" "$root"/LICENSES/GPL-*.txt "$root"/LICENSES/LGPL-*.txt "$srcdir/LGPL-2.0-or-later.txt" "$srcdir/LGPL-2.1-or-later.txt" "$root/CREDITS.md"
   install -Dm644 "$root/vendor/style/LICENSE.MIT" "$share/licenses/$pkgname/MIT.txt"
 
   install -Dm644 "$root/CHANGES.md" "$doc/CHANGES.md"

@@ -1,0 +1,4 @@
+Version=6
+
+Id=frosty_gtk_theme
+Script=frosty-gtk-theme.sh,bash

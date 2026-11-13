@@ -1,6 +1,6 @@
 # Credits
 
-Frosty is built from the work of the people below. Every piece is a pinned copy of their source, changed only as written in [CHANGES.md](CHANGES.md). The pins were taken on 2026-10-20, the Konsole pin on 2026-10-22.
+Frosty is built from the work of the people below. Every piece is a pinned copy of their source, changed only as written in [CHANGES.md](CHANGES.md). The pins were taken on 2026-10-20, the Konsole pin on 2026-10-22, the widget and breeze-gtk pins on 2026-11-12.
 
 ### Pinned sources
 
@@ -15,6 +15,41 @@ Frosty is built from the work of the people below. Every piece is a pinned copy 
 | [vendor/cursors](vendor/cursors) | [EliverLara/Sweet](https://github.com/EliverLara/Sweet), branch `dark-plasma-6`, `kde/cursors/Sweet-cursors`, and its source `kde/cursors/src` and `kde/cursors/build.sh` | commit `fa5229183093c078bebbc1b405d78909ffa18bb4` | 2024-03-27 | GPL-3.0-only | EliverLara |
 | [vendor/konsole](vendor/konsole) | [Konsole](https://invent.kde.org/utilities/konsole), `data/color-schemes/DarkPastels.colorscheme` | tag `v26.08.2`, commit `c21993d0b73b6fe5d4c52da50b25370b40389e4e` | 2026-10-06 | GPL-2.0-or-later | the Konsole authors |
 | [LICENSES](LICENSES) | [spdx/license-list-data](https://github.com/spdx/license-list-data), `text/` | tag `v3.29.0`, commit `76c9a79bb7d2bf851143b76b3935a4d7cbaa644b` | | license texts | Free Software Foundation, SPDX |
+
+### Bundled widgets
+
+The widgets of the Frosty layout are not copied into this repository. [packaging/aur/PKGBUILD](packaging/aur/PKGBUILD) downloads the GitHub archive of each pinned commit, checks it against its `sha256sums` entry, and installs `metadata.json` and `contents` of each widget unchanged in `/usr/share/plasma/plasmoids/<id>`, with the widget's own `LICENSE` in `/usr/share/licenses/frosty/widgets/<id>`. Each pin is the code the owner ran on 2026-11-12.
+
+| Widget id | Upstream | Pin | Commit date | License | Copyright |
+|---|---|---|---|---|---|
+| `KdeControlStation` | [Lukk17/kde-control-station](https://github.com/Lukk17/kde-control-station), the owner's fork of [EliverLara/kde-control-station](https://github.com/EliverLara/kde-control-station), branch `fix-plasma-6.8-inhibitions`, folder `package` | commit `15760413b19f24b5e242baadba09d59fa4168088` | 2026-11-11 | GPL-3.0-only, some files GPL-2.0-or-later, LGPL-2.0-or-later or the KDE license choices, see below | Eliver Lara, the KDE authors named in the file headers, lukk17 |
+| `com.github.N0repi.compactclock` | [N0repi/kde-compact-clock](https://github.com/N0repi/kde-compact-clock) | commit `457200d59e4e6d1b5376bf74a13c4b2b17a4d17b` | 2026-07-24 | GPL-3.0-or-later, one file LGPL-2.0-or-later | N0repi and the Plasma Digital Clock authors named in its `CREDITS.md` and the file headers |
+| `org.kde.plasma.dockio` | [brilliantnz/plasmoid-dockio](https://github.com/brilliantnz/plasmoid-dockio), before named imoize/plasmoid-dockio, folder `package` | tag `v0.2.4`, commit `e3388fc24c05329d95dfbffd8988c00cceb39041` | 2024-09-22 | GPL-3.0-only | Brilliant Nurzaman |
+| `com.github.itayavra.batterywatch` | [itayavra/batterywatch](https://github.com/itayavra/batterywatch) | commit `4dc3d4c1786c8bbcf28b32396fa412aabfc5b1b6`, on the upstream `master` branch since pull request 66 | 2026-10-22 | GPL-3.0-only | Itay Avraham and the BatteryWatch contributors |
+| `com.github.lukk17.aiusage` | [Lukk17/ai-usage-widget](https://github.com/Lukk17/ai-usage-widget), folder `package` | commit `89d751cd46d6d81ee471b1afcc204a617036116e` | 2026-10-22 | GPL-3.0-or-later | lukk17 (Łukasz Sarna) |
+| `/usr/share/licenses/frosty/LGPL-2.0-or-later.txt` | [spdx/license-list-data](https://github.com/spdx/license-list-data), `text/LGPL-2.0-or-later.txt` | tag `v3.29.0` | | license text | Free Software Foundation, SPDX |
+
+### Notes on the widgets
+
+1. Each widget repository ships the GNU GPL version 3 text in its root `LICENSE`, which allows copying and sharing inside another GPL-3.0 package. KDE Control Station says "GPLv3" in its README and its `metadata.json`, Dockio says `GPL-3.0` in its `metadata.json`, and BatteryWatch has no license in its `metadata.json` but links its `LICENSE` from its README badge. None of the three adds an "or later" notice, so they are GPL-3.0-only. Compact Clock and the AI usage widget say GPL-3.0-or-later in their README and `metadata.json`.
+2. The files that KDE Control Station and Compact Clock took from Plasma keep their own SPDX headers: GPL-2.0-or-later, LGPL-2.0-or-later, `GPL-2.0-only OR GPL-3.0-only OR LicenseRef-KDE-Accepted-GPL` and `LGPL-2.1-only OR LGPL-3.0-only OR LicenseRef-KDE-Accepted-LGPL`. Frosty passes them on under the GPL-3.0-only and LGPL-3.0-only choices of the last two, so the package license list names GPL-3.0-only, GPL-2.0-or-later, LGPL-3.0-only and LGPL-2.0-or-later for them. The headers stay unchanged.
+3. KDE Control Station is the upstream `plasma6` branch at commit `bb473188a19d6cbe89a9c1bb5b08c7ddc609375d` plus one commit by lukk17 of 2026-11-11, `15760413b19f24b5e242baadba09d59fa4168088`. It reads the Plasma 6.5 inhibition names `requestedInhibitions`, `icon`, `prettyName` and `reason` with a fallback to the old names, and uses `Kirigami.Units` in place of the removed `PlasmaCore.Units`, in `package/contents/ui/pages/BatteryPage.qml`, `package/contents/ui/pages/components/battery/MainView.qml` and `package/contents/ui/pages/components/battery/PowerManagementItem.qml`. The same change is offered upstream as [EliverLara/kde-control-station#117](https://github.com/EliverLara/kde-control-station/pull/117), still open on 2026-11-12. Its `metadata.json` says version 2.8.0, like the upstream branch. The KDE Store copy that the owner patched says 2.11.0 and has the same files, except an unused `contents/ui/js/helpers.js` left from an older version.
+4. BatteryWatch is installed the way its own `build-plasmoid.sh` packs it: without `contents/screenshots`, `contents/bin/tests` and the `*.test.*` files. Its two helpers in `contents/bin` keep their executable mode.
+5. Compact Clock's `CREDITS.md` names the Plasma Digital Clock authors it derives from. The package installs it next to the widget's `LICENSE`.
+
+### GTK theme
+
+The GTK theme `Frosty-Dark` is not copied into this repository either. [packaging/aur/PKGBUILD](packaging/aur/PKGBUILD) downloads the breeze-gtk release archive, checks it against its `sha256sums` entry, and [packaging/gtk-theme.sh](packaging/gtk-theme.sh) builds it in `build()` with the colors of [vendor/color-scheme/Frosty.colors](vendor/color-scheme/Frosty.colors) without their alpha. No breeze-gtk file is changed. The package installs the result in `/usr/share/themes/Frosty-Dark` and, for Flatpak, the GTK 3 part in `/var/lib/flatpak/extension/org.gtk.Gtk3theme.Frosty-Dark/x86_64/3.22`.
+
+| Component | Upstream | Pin | Commit date | License | Copyright |
+|---|---|---|---|---|---|
+| `/usr/share/themes/Frosty-Dark` and the Flatpak extension | [breeze-gtk](https://invent.kde.org/plasma/breeze-gtk), the release archive `https://download.kde.org/stable/plasma/6.8.2/breeze-gtk-6.8.2.tar.xz`, sha256 `662337b96be3fb67f5ecf903bbd685b894b6b899464822e09311f652a98bc4dd` | tag `v6.8.2`, commit `6a97a744c9bfcd2aa7b47b214af61c432df8858c` | 2026-10-27 | LGPL-2.1-or-later, see below | the KDE development team |
+| `/usr/share/licenses/frosty/LGPL-2.1-or-later.txt` | [spdx/license-list-data](https://github.com/spdx/license-list-data), `text/LGPL-2.1-or-later.txt` | tag `v3.29.0` | | license text | Free Software Foundation, SPDX |
+
+### Notes on the GTK theme
+
+1. The files of the release archive are the same as the tag `v6.8.2`, checked with `diff -r`.
+2. The breeze-gtk files carry no license statement. Its `LICENSES` folder holds only BSD-3-Clause and CC0-1.0, for its build and CI files. Debian's copyright file for breeze-gtk 6.7.4-1 gives every file ("Files: *") to the KDE development team under LGPL-2.1+, so Frosty uses LGPL-2.1-or-later. The Arch Linux package `breeze-gtk` says LGPL-2.0-or-later instead. LGPL-2.1-or-later allows the theme to be shipped next to the GPL parts of Frosty.
 
 ### Notes on the sources
 
@@ -39,4 +74,4 @@ The pinned sources above are themselves built on older work. Their authors and l
 
 ### Your own work in this project
 
-The global theme and its layout in [look-and-feel](look-and-feel), [bin/frosty-setup](bin/frosty-setup), the defaults in [xdg](xdg), the Konsole profile in [konsole](konsole), the [PKGBUILD](PKGBUILD), the AUR recipe, the release scripts and the store credits in [packaging](packaging), the release workflow in [.github/workflows](.github/workflows) and the documentation are by lukk17, under GPL-3.0-or-later. The new style files `kstyle/frostyquickwindowblur.h`, `kstyle/tests/dolphinstatusbar_test.cpp` and `kstyle/tests/windowbackground_test.cpp` in [vendor/style](vendor/style) are by lukk17 under GPL-2.0-or-later, like the Darkly files around them.
+The AI usage widget and the Plasma inhibition fix in KDE Control Station are by lukk17, see [Bundled widgets](#bundled-widgets). The global theme and its layout in [look-and-feel](look-and-feel), [bin/frosty-setup](bin/frosty-setup), the one time GTK step in [kconf_update](kconf_update), the Flatpak override in [flatpak](flatpak), the tests in [tests](tests), the defaults in [xdg](xdg), the Konsole profile in [konsole](konsole), the [PKGBUILD](PKGBUILD), the AUR recipe, the release scripts and the store credits in [packaging](packaging), the release workflow in [.github/workflows](.github/workflows) and the documentation are by lukk17, under GPL-3.0-or-later. The new style files `kstyle/frostyquickwindowblur.h`, `kstyle/tests/dolphinstatusbar_test.cpp` and `kstyle/tests/windowbackground_test.cpp` in [vendor/style](vendor/style) are by lukk17 under GPL-2.0-or-later, like the Darkly files around them.

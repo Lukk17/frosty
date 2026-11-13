@@ -23,7 +23,9 @@ Commands:
                     packaging/aur/PKGBUILD and every depends that is in the
                     Arch repositories.
   test BUILDDIR     Builds vendor/style with BUILD_TESTING=ON in BUILDDIR and
-                    runs its tests on the offscreen Qt platform.
+                    runs its tests on the offscreen Qt platform, then runs
+                    every tests/*_test.sh as the user builder, because
+                    frosty-setup refuses to run as root.
   reuse             Runs reuse lint on the project.
   package OUTDIR    Builds the package from PKGBUILD in this folder with
                     makepkg -f --nodeps as the user builder, copies it to
@@ -132,6 +134,16 @@ run_tests() {
     -Wno-dev
   cmake --build "$builddir"
   QT_QPA_PLATFORM=offscreen ctest --test-dir "$builddir/kstyle6" --output-on-failure --no-tests=error
+  run_script_tests
+}
+
+run_script_tests() {
+  local test
+  ensure_builder
+  for test in tests/*_test.sh; do
+    say "running $test as the user $BUILDER"
+    as_builder bash "$test"
+  done
 }
 
 build_package() {
