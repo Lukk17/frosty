@@ -58,3 +58,7 @@ This file is the notice of changes that the GNU GPL asks for. lukk17 changed the
 21. (2026-11-12) `colors` follows [Frosty.colors](../color-scheme/Frosty.colors) to point 11 of [vendor/color-scheme/CHANGES.md](../color-scheme/CHANGES.md), and lines 1 to 132 are still the same as in that file.
    1. `[ColorEffects:Inactive]`: `Enable` (line 17) changed from `true` to `false`.
    2. `[Colors:Selection]`: `ForegroundNegative` (line 85) changed from `176,55,69` to `255,179,164`.
+
+### 0.0.2, 2026-11-20, lukk17
+
+1. (2026-11-20) `metadata.desktop` and `metadata.json`: `X-KDE-PluginInfo-Version` and `Version` changed from `0.0.1` to `0.0.2`. No other change.

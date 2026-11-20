@@ -16,3 +16,7 @@
 7. (2026-11-10) The layout no longer holds the owner's own applications. `contents/layouts/org.kde.plasma.desktop-layout.js` lost the `Bitwarden_status_icon_1` entry in the hidden items of the system tray, the dock launchers `applications:com.anthropic.Claude.desktop` and `applications:md.obsidian.Obsidian.desktop`, and the AppGrid icon `org.cachyos.hello`, so AppGrid shows its own icon. The dock keeps System Settings, System Monitor, Konsole, the file manager and the web browser.
 8. (2026-11-10) `metadata.json`: `License` changed from `GPL-3.0-or-later` to `GPL-3.0-only`. The files of the global theme are GPL-3.0-or-later, but the installed package and the KDE Store archive also hold `contents/colors`, the GPL-3.0-only Frosty colors, so the package as a whole is GPL-3.0-only.
 9. (2026-11-12) `contents/defaults` names the GTK theme `gtkTheme=Frosty-Dark` in `[kdeglobals][KDE]`. Plasma 6.8 does not read it. plasma-workspace merge request !7101 adds it, and then picking Frosty in System Settings also sets the GTK theme Frosty-Dark.
+
+### 0.0.2, 2026-11-20, lukk17
+
+1. (2026-11-20) `metadata.json`: `Version` changed from `0.0.1` to `0.0.2`. No other change.

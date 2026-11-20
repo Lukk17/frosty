@@ -1,7 +1,7 @@
 # Maintainer: lukk17
 
 pkgname=frosty
-pkgver=0.0.1
+pkgver=0.0.2
 pkgrel=1
 pkgdesc='Frosted glass theme for KDE Plasma 6: Plasma Style, colors, application style, window decoration, GTK theme, icons, cursors, panel layout with its widgets and Konsole and Dolphin defaults'
 arch=('x86_64')

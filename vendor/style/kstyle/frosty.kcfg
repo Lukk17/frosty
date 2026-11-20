@@ -185,7 +185,7 @@
 
     <!-- tab bars -->
     <entry name="TabBarAltStyle" type="Bool">
-      <default>false</default>
+      <default>true</default>
     </entry>
     <entry name="DocumentModeTabs" type="Bool">
       <default>false</default>

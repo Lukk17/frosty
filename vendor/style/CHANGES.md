@@ -47,6 +47,11 @@ The files `kstyle/frostyquickwindowblur.h`, `kstyle/tests/dolphinstatusbar_test.
 17. (2026-11-10) Removed `.clang-format`. It is not part of Darkly v0.5.41. ECM's `KDEClangFormat`, called from `CMakeLists.txt` line 208, copies its own `clang-format.cmake` to `.clang-format` in this folder when `clang-format` is installed and the file is missing (extra-cmake-modules 6.31 `kde-modules/KDEClangFormat.cmake` lines 57 to 69), so a build makes it again with the same content. The project `.gitignore` keeps that copy out of git.
 18. (2026-11-10) Added `LICENSE.MIT`: the MIT permission notice with the copyright lines of the 29 Darkly files that carry it, listed under MIT in `REUSE.toml`. The package installs it as `/usr/share/licenses/frosty/MIT.txt`, in place of the MIT template from `LICENSES`.
 
+### 0.0.2, 2026-11-17, lukk17
+
+1. (2026-11-17) Tabs use the underline style by default, because the active tab was hard to tell apart. `kstyle/frosty.kcfg` line 188, group `Style`: the default of `TabBarAltStyle` changed from false to true. `Style::drawTabBarTabShapeControl` in `kstyle/frostystyle.cpp` (line 7535) then draws a thick line, 4 pixels in the focus colour, under the active tab and a thin line, 2 pixels, under the other tabs, in place of the filled tab shape. This covers the document-mode tab bars of Dolphin, Konsole and Kate and every other tab bar the style draws. The style settings call it Frosty Alternative on the Tabs page. KConfig does not write a value equal to the default into `frostyrc`, so every user without a `TabBarAltStyle` line gets the new look, and picking Frosty or Frosty Default on that page writes `TabBarAltStyle=false`.
+2. (2026-11-17) `VERSION` changed from `0.0.1` to `0.0.2`.
+
 ### What the package installs from this folder
 
 | Darkly 0.5.41 | Frosty |

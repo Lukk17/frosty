@@ -1,6 +1,6 @@
 pkgbase = frosty
 	pkgdesc = Frosted glass theme for KDE Plasma 6: Plasma Style, colors, application style, window decoration, GTK theme, icons, cursors, panel layout with its widgets and Konsole and Dolphin defaults
-	pkgver = 0.0.1
+	pkgver = 0.0.2
 	pkgrel = 1
 	url = https://github.com/Lukk17/frosty
 	install = packaging/aur/frosty.install

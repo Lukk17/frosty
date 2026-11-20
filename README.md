@@ -2,7 +2,7 @@
 
 A frosted glass theme for KDE Plasma 6, packaged for Arch Linux as one package.
 
-![Version 0.0.1](https://img.shields.io/badge/version-0.0.1-8a2be2) ![Plasma 6.7](https://img.shields.io/badge/Plasma-6.7-1d99f3) ![AUR version](https://img.shields.io/aur/version/frosty) ![License GPL, LGPL and MIT](https://img.shields.io/badge/license-GPL--3.0%20%7C%20GPL--2.0%2B%20%7C%20LGPL--3.0%20%7C%20LGPL--2.1%2B%20%7C%20LGPL--2.0%2B%20%7C%20MIT-blue)
+![Version 0.0.2](https://img.shields.io/badge/version-0.0.2-8a2be2) ![Plasma 6.7](https://img.shields.io/badge/Plasma-6.7-1d99f3) ![AUR version](https://img.shields.io/aur/version/frosty) ![License GPL, LGPL and MIT](https://img.shields.io/badge/license-GPL--3.0%20%7C%20GPL--2.0%2B%20%7C%20LGPL--3.0%20%7C%20LGPL--2.1%2B%20%7C%20LGPL--2.0%2B%20%7C%20MIT-blue)
 
 ---
 
@@ -12,7 +12,7 @@ Frosty turns Plasma into grey frosted glass: see-through panels, popups and wind
 
 1. The Plasma Style `frosty`, from the Layan Plasma Style with more see-through popups, panels and blurred widgets. Its window colour has the same alpha as the color scheme, so widgets that draw their own cards in that colour, such as KDE Control Station, are 80 percent glass too.
 2. The color scheme Frosty, the Layan colors with a dark grey window background that is about 20 percent see-through.
-3. The application style and window decoration Frosty, a renamed copy of Darkly 0.5.41 with tool bars, tab bars, menu bars, the Dolphin sidebar, the Dolphin view, the Dolphin status bar and plain window areas at 80 percent and a blurred title bar. It is built into the package, so Darkly itself is not needed, and it can be installed next to the real Darkly.
+3. The application style and window decoration Frosty, a renamed copy of Darkly 0.5.41 with tool bars, tab bars, menu bars, the Dolphin sidebar, the Dolphin view, the Dolphin status bar and plain window areas at 80 percent, a thick accent line under the active tab and a blurred title bar. It is built into the package, so Darkly itself is not needed, and it can be installed next to the real Darkly.
 4. The icon theme `frosty`: Infinity-Dark-Icons for system icons, candy-icons for the terminal, settings, system monitor and drive icons, Sours-Full-Color for keyboards, mice, phones, network cards and other devices, and a plain folder with a yellow to pink gradient for folders and Dolphin. Applications keep their own icons.
 5. The Sweet cursors, under their own name `Sweet-cursors`.
 6. The GTK 3 and GTK 4 theme `Frosty-Dark`, built when the package is built from KDE's breeze-gtk 6.8.2 with the Frosty colors. GTK applications read the live KDE colors through it, so they follow the color scheme you pick, and the Frosty colors are the fallback. The package also installs it as a Flatpak theme and lets Flatpak applications read the KDE colors, and it switches every user who still has KDE's default GTK theme to `Frosty-Dark` once, at the next login. See [GTK and Flatpak applications](#gtk-and-flatpak-applications).
