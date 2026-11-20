@@ -25,3 +25,7 @@ The folder [frosty](frosty) is the icon theme Frosty. It is made from three icon
 9. Removed seven application icon names that Infinity keeps outside its `apps` folder, so those applications keep their own icons: `TeamViewer` (status folders), `flameshot` and `org.flameshot.Flameshot` (preferences folders), `keepassxc-locked` and `keepassxc-unlocked` (status folders), `vokoscreenNG` (preferences folders) and `systemsettings` (categories folder). 22 files were removed.
 10. Twenty other names from the same check were kept, because Breeze also uses them as system icons (actions, status, categories, preferences or mime types), not as application icons: `applications-internet`, `applications-utilities`, `apport`, `dialog-text-and-font`, `document-open-recent`, `flash`, `folder-open-recent`, `kdeconnect`, `kontact-import-wizard`, `plasma`, `preferences-other`, `preferences-plugin`, `preferences-system-bluetooth`, `security-medium`, `system-reboot-update-symbolic`, `system-run`, `system-search`, `virtualbox-vbox`, `yast-disk` and `zoom`.
 11. (2026-11-10) No icon file changed. 12827 Infinity files are byte for byte the same as Breeze icons, 10 of them (`pan-*` and `selection-*` in `actions/symbolic`) also as GNOME Adwaita icons. [REUSE.toml](../../REUSE.toml) now gives the Breeze ones to the Breeze authors under LGPL-3.0-or-later and the 10 GNOME ones to the GNOME Project under LGPL-3.0-only, see [CREDITS.md](../../CREDITS.md).
+
+### 0.0.3, 2026-11-20, lukk17
+
+1. (2026-11-20) No file in this folder changed. The version 0.0.3 only follows the Frosty release.

@@ -441,11 +441,11 @@ gh workflow run release.yml --ref main
 | [kconf_update/frosty-gtk-theme.sh](kconf_update/frosty-gtk-theme.sh) | Sets the GTK theme `Frosty-Dark` over KDE's default GTK theme |
 | [flatpak/frosty-flatpak-gtk](flatpak/frosty-flatpak-gtk) | Adds the two read-only KDE color folders to the global Flatpak override, and takes them out again |
 | [flatpak/frosty-flatpak-gtk.hook](flatpak/frosty-flatpak-gtk.hook) | The pacman hook that runs the add step when pacman installs flatpak |
-| [tests](tests) | The tests of the GTK part of `frosty-setup`, of the `kconf_update` script and of the Flatpak override script, run by [packaging/ci.sh](packaging/ci.sh) |
+| [tests](tests) | The tests of the GTK part of `frosty-setup`, of the `kconf_update` script, of the Flatpak override script and of the KDE Store changelogs, run by [packaging/ci.sh](packaging/ci.sh) |
 | [packaging/version.sh](packaging/version.sh) | Checks that every place states the same version |
 | [packaging/changelog.sh](packaging/changelog.sh) | Prints the section of one version from a CHANGES.md file |
 | [packaging/ci.sh](packaging/ci.sh) | The release checks in an Arch Linux container: style and script tests, reuse lint, package, AUR recipe, namcap |
-| [packaging/store.sh](packaging/store.sh) | Makes the KDE Store archives and the upload checklist |
+| [packaging/store.sh](packaging/store.sh) | Makes the KDE Store archives and the upload checklist, and lists the changelog file of each archive |
 | [packaging/store](packaging/store) | The short credits file of each KDE Store archive |
 | [.github/workflows/release.yml](.github/workflows/release.yml) | The release workflow |
 | [.gitignore](.gitignore) | The build output kept out of git |

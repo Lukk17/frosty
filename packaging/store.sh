@@ -15,6 +15,7 @@ usage() {
   cat <<'EOF'
 Usage: packaging/store.sh archives OUTDIR
        packaging/store.sh checklist ARCHIVEDIR
+       packaging/store.sh changelogs
        packaging/store.sh --help
 
 Makes the KDE Store archives of Frosty and the checklist for uploading them.
@@ -45,6 +46,9 @@ Commands:
   checklist ARCHIVEDIR Prints a Markdown checklist for the manual upload: for
                        every product the archive in ARCHIVEDIR, the store
                        category, the version and the changelog to paste.
+  changelogs           Prints the CHANGES.md file of every product, one path
+                       per line, from the project folder. checklist takes the
+                       changelog to paste from these files.
 
 The version comes from packaging/version.sh.
 
@@ -55,8 +59,8 @@ Exit status:
   0  done
   1  the version check failed, an archive could not be made, an archive has
      the wrong layout, or an archive is missing for the checklist
-  2  wrong use: an unknown command, a missing argument, or a needed program is
-     missing
+  2  wrong use: an unknown command, a missing or extra argument, or a needed
+     program is missing
 EOF
   exit "${1:-0}"
 }
@@ -184,17 +188,26 @@ print_checklist() {
   done
 }
 
+print_changelogs() {
+  local product changes
+  for product in "${PRODUCTS[@]}"; do
+    IFS='|' read -r _ _ _ _ _ _ _ changes <<< "$product"
+    printf '%s\n' "$changes"
+  done
+}
+
 main() {
   local command=${1:-}
   case "$command" in
     -h | --help) usage 0 ;;
-    archives | checklist) ;;
+    changelogs) (( $# == 1 )) || { error "$command takes no folder"; usage 2 >&2; } ;;
+    archives | checklist) (( $# == 2 )) || { error "$command needs one folder"; usage 2 >&2; } ;;
     '') error 'a command is needed'; usage 2 >&2 ;;
     *) error "unknown command: $command"; usage 2 >&2 ;;
   esac
-  if (( $# != 2 )); then
-    error "$command needs one folder"
-    usage 2 >&2
+  if [[ "$command" == changelogs ]]; then
+    print_changelogs
+    return 0
   fi
 
   local tool

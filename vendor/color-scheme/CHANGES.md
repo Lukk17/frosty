@@ -36,3 +36,7 @@ This file is the notice of changes that the GNU GPL asks for. lukk17 changed the
 11. (2026-11-12) Unfocused windows and the error text on a selected row.
    1. `[ColorEffects:Inactive]`: `Enable` (line 17) changed from `true` to `false`, as in `BreezeDark.colors` of breeze 6.8.2, so the colors of an unfocused window no longer get the inactive effect. The other keys of the group were already the Breeze Dark values and are unchanged. The inactive title bar colors in `[Colors:Header][Inactive]` are unchanged.
    2. `[Colors:Selection]`: `ForegroundNegative` (line 85) changed from `176,55,69` to `255,179,164`. Measured with the WCAG 2 contrast formula on the selection color `86,87,245`: 3.00 to 1, up from 1.17 to 1. This is no longer the Breeze Dark value of point 9.
+
+### 0.0.3, 2026-11-20, lukk17
+
+1. (2026-11-20) No file in this folder changed. The version 0.0.3 only follows the Frosty release.
