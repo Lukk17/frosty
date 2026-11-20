@@ -130,10 +130,7 @@ addWidgets(topBar, [
     },
     { plugin: "org.kde.plasma.notifications" },
     { plugin: "KdeControlStation" },
-    {
-        plugin: "com.github.lukk17.aiusage",
-        config: { "General": { refreshSeconds: 300 } }
-    }
+    { plugin: "com.github.lukk17.aiusage" }
 ]);
 
 function dockWidgets(shortcut) {

@@ -62,3 +62,7 @@ This file is the notice of changes that the GNU GPL asks for. lukk17 changed the
 ### 0.0.2, 2026-11-20, lukk17
 
 1. (2026-11-20) `metadata.desktop` and `metadata.json`: `X-KDE-PluginInfo-Version` and `Version` changed from `0.0.1` to `0.0.2`. No other change.
+
+### 0.0.3, 2026-11-20, lukk17
+
+1. (2026-11-20) `metadata.desktop` and `metadata.json`: `X-KDE-PluginInfo-Version` and `Version` changed from `0.0.2` to `0.0.3`. No other change.

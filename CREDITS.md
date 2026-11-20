@@ -26,7 +26,7 @@ The widgets of the Frosty layout are not copied into this repository. [packaging
 | `com.github.N0repi.compactclock` | [N0repi/kde-compact-clock](https://github.com/N0repi/kde-compact-clock) | commit `457200d59e4e6d1b5376bf74a13c4b2b17a4d17b` | 2026-07-24 | GPL-3.0-or-later, one file LGPL-2.0-or-later | N0repi and the Plasma Digital Clock authors named in its `CREDITS.md` and the file headers |
 | `org.kde.plasma.dockio` | [brilliantnz/plasmoid-dockio](https://github.com/brilliantnz/plasmoid-dockio), before named imoize/plasmoid-dockio, folder `package` | tag `v0.2.4`, commit `e3388fc24c05329d95dfbffd8988c00cceb39041` | 2024-09-22 | GPL-3.0-only | Brilliant Nurzaman |
 | `com.github.itayavra.batterywatch` | [itayavra/batterywatch](https://github.com/itayavra/batterywatch) | commit `4dc3d4c1786c8bbcf28b32396fa412aabfc5b1b6`, on the upstream `master` branch since pull request 66 | 2026-10-22 | GPL-3.0-only | Itay Avraham and the BatteryWatch contributors |
-| `com.github.lukk17.aiusage` | [Lukk17/ai-usage-widget](https://github.com/Lukk17/ai-usage-widget), folder `package` | commit `89d751cd46d6d81ee471b1afcc204a617036116e` | 2026-10-22 | GPL-3.0-or-later | lukk17 (Łukasz Sarna) |
+| `com.github.lukk17.aiusage` | [Lukk17/ai-usage-widget](https://github.com/Lukk17/ai-usage-widget), folder `package` | commit `79b139a77da21d4d5f5a5ab7256b0466cf4f9830` | 2026-11-20 | GPL-3.0-or-later | lukk17 (Łukasz Sarna) |
 | `/usr/share/licenses/frosty/LGPL-2.0-or-later.txt` | [spdx/license-list-data](https://github.com/spdx/license-list-data), `text/LGPL-2.0-or-later.txt` | tag `v3.29.0` | | license text | Free Software Foundation, SPDX |
 
 ### Notes on the widgets

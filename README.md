@@ -2,7 +2,7 @@
 
 A frosted glass theme for KDE Plasma 6, packaged for Arch Linux as one package.
 
-![Version 0.0.2](https://img.shields.io/badge/version-0.0.2-8a2be2) ![Plasma 6.7](https://img.shields.io/badge/Plasma-6.7-1d99f3) ![AUR version](https://img.shields.io/aur/version/frosty) ![License GPL, LGPL and MIT](https://img.shields.io/badge/license-GPL--3.0%20%7C%20GPL--2.0%2B%20%7C%20LGPL--3.0%20%7C%20LGPL--2.1%2B%20%7C%20LGPL--2.0%2B%20%7C%20MIT-blue)
+![Version 0.0.3](https://img.shields.io/badge/version-0.0.3-8a2be2) ![Plasma 6.7](https://img.shields.io/badge/Plasma-6.7-1d99f3) ![AUR version](https://img.shields.io/aur/version/frosty) ![License GPL, LGPL and MIT](https://img.shields.io/badge/license-GPL--3.0%20%7C%20GPL--2.0%2B%20%7C%20LGPL--3.0%20%7C%20LGPL--2.1%2B%20%7C%20LGPL--2.0%2B%20%7C%20MIT-blue)
 
 ---
 
@@ -121,7 +121,7 @@ Replace your panels and desktop widgets with the Frosty ones? Your backup is sav
 ```
 
 1. Pressing Enter or typing n means No. Frosty changes only the look: colors, application style, Plasma Style, window decoration, icons and cursors. Your panels and desktop widgets stay as they are.
-2. Typing y means Yes. Frosty applies its global theme with its layout. Plasma first deletes all your panels and desktop widgets and sets its default wallpaper, then builds the Frosty top bar, docks and desktop widgets. After that, frosty-setup copies your old settings from the backup into every new widget that you also had before, for example the accounts of the AI usage widget, BatteryWatch, the clock, the task manager and the system tray. When you had the same widget more than once, the first old one goes to the first new one, counted from the top panel, then the bottom panel, then the desktop, and from left to right. Old widgets that the Frosty layout does not have are listed as "not in Frosty". They are not added back, the backup still has them.
+2. Typing y means Yes. Frosty applies its global theme with its layout. Plasma first deletes all your panels and desktop widgets and sets its default wallpaper, then builds the Frosty top bar, docks and desktop widgets. After that, frosty-setup copies your old settings from the backup into every new widget that you also had before, for example BatteryWatch, the clock, the task manager and the system tray. The AI usage widget keeps its accounts in its own file `~/.config/ai-usage-widgetrc`, which the layout does not change. Accounts that are still only in its old panel settings are copied back too, and the widget moves them into that file once. When you had the same widget more than once, the first old one goes to the first new one, counted from the top panel, then the bottom panel, then the desktop, and from left to right. Old widgets that the Frosty layout does not have are listed as "not in Frosty". They are not added back, the backup still has them.
 
 For scripts, `frosty-setup --yes` answers Yes and `frosty-setup --look-only` answers No without asking. Without a terminal to ask in, the answer is No.
 
@@ -201,7 +201,7 @@ These are left out on purpose:
 
 These settings of the owner's desktop were not copied, because they hold personal data, usage history or state that the widgets write themselves:
 
-1. The accounts list of the AI usage widget, which holds e-mail addresses and account and team ids. The layout starts it with no accounts, and `frosty-setup` copies your own accounts back from your backup.
+1. The accounts list of the AI usage widget, which holds e-mail addresses and account and team ids. The layout starts it with no accounts in its panel settings, and the widget reads your own accounts from its file `~/.config/ai-usage-widgetrc`, which the layout does not change.
 2. The Gmail web app launcher in the dock, which belongs to one Chrome profile, and the owner's own applications: the Claude and Obsidian launchers in the dock, the Bitwarden entry in the system tray and the CachyOS Hello icon on the AppGrid button. AppGrid shows its own icon.
 3. AppGrid's lists of known, recent and counted applications, its migration flags, and a `systemFavorites` key that AppGrid does not use.
 4. The popup sizes and settings dialog sizes of every widget.

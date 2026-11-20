@@ -20,3 +20,8 @@
 ### 0.0.2, 2026-11-20, lukk17
 
 1. (2026-11-20) `metadata.json`: `Version` changed from `0.0.1` to `0.0.2`. No other change.
+
+### 0.0.3, 2026-11-20, lukk17
+
+1. (2026-11-20) `metadata.json`: `Version` changed from `0.0.2` to `0.0.3`.
+2. (2026-11-20) `contents/layouts/org.kde.plasma.desktop-layout.js` adds the AI usage widget `com.github.lukk17.aiusage` without the `config` entry `refreshSeconds: 300` in the `General` group. The widget 1.0.1 reads its refresh time only from its own file `~/.config/ai-usage-widgetrc`, so the panel value was ignored and the widget used its default of 30 seconds.

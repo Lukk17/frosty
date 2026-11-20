@@ -1,7 +1,7 @@
 # Maintainer: lukk17
 
 pkgname=frosty
-pkgver=0.0.2
+pkgver=0.0.3
 pkgrel=1
 pkgdesc='Frosted glass theme for KDE Plasma 6: Plasma Style, colors, application style, window decoration, GTK theme, icons, cursors, panel layout with its widgets and Konsole and Dolphin defaults'
 arch=('x86_64')
@@ -82,7 +82,7 @@ _kcs_commit=15760413b19f24b5e242baadba09d59fa4168088
 _clock_commit=457200d59e4e6d1b5376bf74a13c4b2b17a4d17b
 _dockio_commit=e3388fc24c05329d95dfbffd8988c00cceb39041
 _battery_commit=4dc3d4c1786c8bbcf28b32396fa412aabfc5b1b6
-_aiusage_commit=89d751cd46d6d81ee471b1afcc204a617036116e
+_aiusage_commit=79b139a77da21d4d5f5a5ab7256b0466cf4f9830
 _breeze_gtk_ver=6.8.2
 _spdx_tag=v3.29.0
 source=(
@@ -101,7 +101,7 @@ sha256sums=('0000000000000000000000000000000000000000000000000000000000000000'
             'b5075ef6f90223e0f9a624727503472c119f2d35cfab850062a299298152e3b6'
             '7a1e1397ceb637787d6f269ebf0e9e9177294b4a23aeab9464ba19dfe7f3622d'
             '3d55f49070a0640c2cb5d100361f1e99d016f50e015ede656ee06060b7606884'
-            'a3c98959b89fd06f5736434bac5df2b278c89d0d17aeef0b6164e39dc460fed2'
+            '3f373194acc91f5bc5c16879217c6f9d32245eec89dc85b4eb7bb67f4f9d209d'
             '86dc99d7e5060915ab1dfc1378b7dd351c62088bfa74067e8aa1868c6fdba7d8'
             '662337b96be3fb67f5ecf903bbd685b894b6b899464822e09311f652a98bc4dd'
             '5749785c8bdefafcb5d798270ed0a967036fe2ca63dcedade1627565dfef81d2')

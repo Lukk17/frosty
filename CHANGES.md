@@ -51,3 +51,8 @@ The first release. Frosty 0.0.1 contains:
 ### 0.0.2, 2026-11-17, lukk17
 
 1. (2026-11-17) Tabs now use the underline style by default, a thick accent line under the active tab, because the active tab was hard to tell apart. This covers the document-mode tab bars of Dolphin, Konsole and Kate and every other tab bar that the Frosty style draws. The default of `TabBarAltStyle` in the `[Style]` group of `frostyrc` is now `true`, the choice Frosty Alternative on the Tabs page of the style settings, see [vendor/style/CHANGES.md](vendor/style/CHANGES.md).
+
+### 0.0.3, 2026-11-20, lukk17
+
+1. (2026-11-20) The AI usage widget is now pinned at commit `79b139a77da21d4d5f5a5ab7256b0466cf4f9830`, its version 1.0.1, in place of `89d751cd46d6d81ee471b1afcc204a617036116e`, see [CREDITS.md](CREDITS.md). It keeps the account list and the refresh choice in its own file `~/.config/ai-usage-widgetrc` in place of the Plasma panel settings, so every copy of the widget shows the same accounts, and a new layout or a panel reset no longer removes them. On its first start it copies the accounts from the old panel settings into that file once. It also fixes plasmashell memory that grew with every check, about 80 MB per hour, because the check command text is now the same on every check. The README and [docs/PLATFORM-NOTES.md](docs/PLATFORM-NOTES.md) now say where the accounts are kept.
+2. (2026-11-20) The layout no longer gives the AI usage widget `refreshSeconds: 300`. Widget 1.0.1 reads its refresh time only from its own file `~/.config/ai-usage-widgetrc`, so the panel value was ignored and the widget used its default of 30 seconds, see [look-and-feel/CHANGES.md](look-and-feel/CHANGES.md).

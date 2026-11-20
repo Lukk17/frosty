@@ -52,6 +52,10 @@ The files `kstyle/frostyquickwindowblur.h`, `kstyle/tests/dolphinstatusbar_test.
 1. (2026-11-17) Tabs use the underline style by default, because the active tab was hard to tell apart. `kstyle/frosty.kcfg` line 188, group `Style`: the default of `TabBarAltStyle` changed from false to true. `Style::drawTabBarTabShapeControl` in `kstyle/frostystyle.cpp` (line 7535) then draws a thick line, 4 pixels in the focus colour, under the active tab and a thin line, 2 pixels, under the other tabs, in place of the filled tab shape. This covers the document-mode tab bars of Dolphin, Konsole and Kate and every other tab bar the style draws. The style settings call it Frosty Alternative on the Tabs page. KConfig does not write a value equal to the default into `frostyrc`, so every user without a `TabBarAltStyle` line gets the new look, and picking Frosty or Frosty Default on that page writes `TabBarAltStyle=false`.
 2. (2026-11-17) `VERSION` changed from `0.0.1` to `0.0.2`.
 
+### 0.0.3, 2026-11-20, lukk17
+
+1. (2026-11-20) `VERSION` changed from `0.0.2` to `0.0.3`. No other change.
+
 ### What the package installs from this folder
 
 | Darkly 0.5.41 | Frosty |
